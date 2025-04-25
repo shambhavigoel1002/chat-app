@@ -1,9 +1,8 @@
-// app/api/messages/route.ts
 import { NextResponse } from 'next/server';
 import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages';
 
-// Message interface
+
 interface Message {
   id: string;
   text: string;
@@ -11,10 +10,8 @@ interface Message {
   timestamp: Date;
 }
 
-// In-memory store for messages (would use a database in production)
 let messages: Message[] = [];
 
-// Initialize the Langchain chat model
 const chatModel = new ChatOpenAI({
   temperature: 0.7,
   openAIApiKey: process.env.OPENAI_API_KEY,
@@ -29,11 +26,10 @@ export async function POST(request: Request) {
   const { text, sender } = body;
   
   // Validate required fields
-  if (!text || !sender) {
+ if (!text || !sender) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
   
-  // Create new user message
   const userMessage: Message = {
     id: Date.now().toString(),
     text,
@@ -45,9 +41,8 @@ export async function POST(request: Request) {
   messages.push(userMessage);
   
   try {
-    // Convert previous messages to the format expected by Langchain
     const langchainMessages = messages
-      .slice(-10) // Use last 10 messages for context
+      .slice(-10) 
       .map(msg => {
         if (msg.sender === 'AI') {
           return new AIMessage(msg.text);
@@ -75,7 +70,6 @@ export async function POST(request: Request) {
     // Add AI message to messages array
     messages.push(aiMessage);
     
-    // Return both the user message and AI response
     return NextResponse.json([userMessage, aiMessage], { status: 201 });
   } catch (error) {
     console.error('Error getting response from Langchain:', error);

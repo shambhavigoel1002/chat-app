@@ -1,10 +1,8 @@
-// app/page.tsx
 "use client";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "./styles/Home.module.css"; // Make sure to update the CSS import path
 
-// Define message type
 interface Message {
   id: string;
   text: string;
